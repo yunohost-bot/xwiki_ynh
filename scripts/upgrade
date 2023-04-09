@@ -32,7 +32,9 @@ then
 	ynh_setup_source --dest_dir="$install_dir" --keep ="xwiki_env"
 fi
 
+chmod -R o-rwx "$install_dir"
 chown -R $app:www-data "$install_dir"
+chmod +x "$install_dir/start_xwiki.sh"
 
 #=================================================
 # REAPPLY SYSTEM CONFIGURATIONS
