@@ -1,18 +1,18 @@
 packaging_format = 2
 
 id = "xwiki"
-name = "Xwiki"
-description.en = "Explain in *a few (10~15) words* the purpose of the app or what it actually does (it is meant to give a rough idea to users browsing a catalog of 100+ apps)"
-description.fr = "Expliquez en *quelques* (10~15) mots l'utilité de l'app ou ce qu'elle fait (l'objectif est de donner une idée grossière pour des utilisateurs qui naviguent dans un catalogue de 100+ apps)"
+name = "xWiki"
+description.en = "Collaboration tool based on the wiki principle"
+description.fr = "Outil de collaboration basé sur le principe du wiki"
 
 version = "14.10.8~ynh1"
 
-maintainers = ["johndoe"]
+maintainers = [""]
 
 [upstream]
 license = "LGPL-2.1"
 website = "https://www.xwiki.org/"
-demo = "https://demo.example.com"
+demo = "https://playground.xwiki.org/xwiki/bin/view/Main/WebHome"
 admindoc = "https://www.xwiki.org/xwiki/bin/view/Documentation/AdminGuide/"
 userdoc = "https://www.xwiki.org/xwiki/bin/view/Documentation/UserGuide/"
 code = "https://github.com/xwiki/xwiki-platform"
