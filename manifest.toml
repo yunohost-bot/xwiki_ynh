@@ -1,0 +1,65 @@
+packaging_format = 2
+
+id = "xwiki"
+name = "Xwiki"
+description.en = "Explain in *a few (10~15) words* the purpose of the app or what it actually does (it is meant to give a rough idea to users browsing a catalog of 100+ apps)"
+description.fr = "Expliquez en *quelques* (10~15) mots l'utilité de l'app ou ce qu'elle fait (l'objectif est de donner une idée grossière pour des utilisateurs qui naviguent dans un catalogue de 100+ apps)"
+
+version = "14.10.8~ynh1"
+
+maintainers = ["johndoe"]
+
+[upstream]
+license = "LGPL-2.1"
+website = "https://www.xwiki.org/"
+demo = "https://demo.example.com"
+admindoc = "https://www.xwiki.org/xwiki/bin/view/Documentation/AdminGuide/"
+userdoc = "https://www.xwiki.org/xwiki/bin/view/Documentation/UserGuide/"
+code = "https://github.com/xwiki/xwiki-platform"
+
+[integration]
+yunohost = ">= 11.1.17"
+architectures = "all"
+multi_instance = true
+ldap = false
+sso = false
+disk = "50M"
+ram.build = "50M"
+ram.runtime = "50M"
+
+[install]
+    [install.domain]
+    type = "domain"
+
+    [install.path]
+    type = "path"
+    default = "/xwiki"
+
+    [install.init_main_permission]
+    type = "group"
+    default = "visitors"
+
+[resources]
+
+    [resources.sources]
+
+        [resources.sources.main]
+        url = "https://nexus.xwiki.org/nexus/content/groups/public/org/xwiki/platform/xwiki-platform-distribution-jetty-hsqldb/14.10.8/xwiki-platform-distribution-jetty-hsqldb-14.10.8.zip"
+        sha256 = "42bb11563587860d2268f3226b90c6ae5cf5930e027fe0e3386fb2de29445a2b"
+
+    [resources.ports]
+    main.default = 31386
+    stop.default = 31387
+
+    [resources.system_user]
+
+    [resources.install_dir]
+
+    [resources.permissions]
+    main.url = "/"
+
+    [resources.apt]
+    packages = "mariadb-server openjdk-17-jdk"
+
+    [resources.database]
+    type = "mysql"

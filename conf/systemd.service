@@ -1,0 +1,17 @@
+[Unit]
+Description=xWiki
+After=network.target
+
+[Service]
+Type=simple
+User=__APP__
+Group=__APP__
+EnvironmentFile=__INSTALL_DIR__/xwiki_env
+WorkingDirectory=__INSTALL_DIR__/
+ExecStart=/bin/bash start_xwiki.sh -p __PORT__ -sp __PORT_STOP__ -ni
+ExecStop=/bin/bash stop_xwiki.sh
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
