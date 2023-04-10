@@ -55,7 +55,7 @@ ram.runtime = "50M"
     main.url = "/"
 
     [resources.apt]
-    packages = "mariadb-server openjdk-17-jdk"
+    packages = "openjdk-17-jdk" #mariadb-server
 
-    [resources.database]
-    type = "mysql"
+    #[resources.database]
+    #type = "mysql"
