@@ -1,1 +1,1 @@
-This is a dummy description of this app features
+XWiki is an Open Source wiki engine (LGPLv2) suitable for use by workgroups (associations, companies, etc.). The software allows the rapid creation of small applications to meet different information management needs.
