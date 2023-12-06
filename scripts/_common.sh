@@ -37,10 +37,10 @@ disable_super_admin() {
 install_exension() {
     local extension_id=$1
     local extension_version=$2
-    local namespace=$3
     local temp_dir=$(mktemp -d)
     local job_id=$(ynh_string_random)
     local xq=$install_dir/xq_tool/xq
+    local curl='curl --silent --show-error'
 
     local status_raw
     local state_request
@@ -49,16 +49,18 @@ install_exension() {
     chown root:root $temp_dir
 
     ynh_add_config --template=install_extensions.xml --destination=$temp_dir/install_extensions.xml
-    status_raw=$(curl -i --user "superadmin:$super_admin_pwd" -X PUT -H 'Content-Type: text/xml' "http://localhost:$port/xwiki/rest/jobs?jobType=install&async=true" --upload-file $temp_dir/install_extensions.xml)
+    status_raw=$($curl -i --user "superadmin:$super_admin_pwd" -X PUT -H 'Content-Type: text/xml' "http://localhost:$port/xwiki/rest/jobs?jobType=install&async=true" --upload-file $temp_dir/install_extensions.xml)
     state_request=$(echo $status_raw | $xq -x '//jobStatus/ns2:state')
 
     while true; do
         sleep 5
 
-        status_raw=$(curl --user "superadmin:$super_admin_pwd" -X GET -H 'Content-Type: text/xml' "http://localhost:$port/xwiki/rest/jobstatus/extension/provision/$job_id")
+        status_raw=$($curl --user "superadmin:$super_admin_pwd" -X GET -H 'Content-Type: text/xml' "http://localhost:$port/xwiki/rest/jobstatus/extension/provision/$job_id")
         state_request=$(echo "$status_raw" | $xq -x '//jobStatus/state')
 
-        if [ "$state_request" == FINISHED ]; then
+        if [ -z "$state_request" ]; then
+            ynh_die --message="Invalid answer: '$status_raw'"
+        elif [ "$state_request" == FINISHED ]; then
             # Check if error happen
             error_msg=$(echo "$status_raw" | $xq -x '//jobStatus/errorMessage')
             if [ -z "$error_msg" ]; then
@@ -66,6 +68,8 @@ install_exension() {
             else
                 ynh_die --message="Error while installing extension '$extension_id'. Error: $error_msg"
             fi
+        elif [ "$state_request" != RUNNING ]; then
+            ynh_die --message="Invalid status '$state_request'"
         fi
     done
 }
@@ -75,17 +79,20 @@ wait_for_flavor_install() {
     local status_raw
     local state_request
     local xq=$install_dir/xq_tool/xq
+    local curl='curl --silent --show-error'
 
     # Need to call main page to start xwiki service
-    curl "http://localhost:$port/xwiki/bin/view/Main/" > /dev/null &
+    $curl "http://localhost:$port/xwiki/bin/view/Main/" > /dev/null &
 
     sleep 20
 
     while true; do
-        status_raw=$(curl --user "superadmin:$super_admin_pwd" -X GET -H 'Content-Type: text/xml' "http://localhost:$port/xwiki/rest/jobstatus/extension/action/$flavor_job_id")
+        status_raw=$($curl --user "superadmin:$super_admin_pwd" -X GET -H 'Content-Type: text/xml' "http://localhost:$port/xwiki/rest/jobstatus/extension/action/$flavor_job_id")
         state_request=$(echo "$status_raw" | $xq -x '//jobStatus/state')
 
-        if [ "$state_request" == FINISHED ]; then
+        if [ -z "$state_request" ]; then
+            ynh_die --message="Invalid answer: '$status_raw'"
+        elif [ "$state_request" == FINISHED ]; then
             # Check if error happen
             error_msg=$(echo "$status_raw" | $xq -x '//jobStatus/errorMessage')
             if [ -z "$error_msg" ]; then
@@ -93,6 +100,8 @@ wait_for_flavor_install() {
             else
                 ynh_die --message="Error while installing extension 'org.xwiki.platform%3Axwiki-platform-distribution-flavor-mainwiki'. Error: $error_msg"
             fi
+        elif [ "$state_request" != RUNNING ]; then
+            ynh_die --message="Invalid status '$state_request'"
         fi
         sleep 10
     done
