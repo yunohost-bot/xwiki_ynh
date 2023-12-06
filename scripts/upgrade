@@ -18,9 +18,9 @@ fi
 #=================================================
 # STOP SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Stopping a systemd service..." --weight=1
+ynh_script_progression --message='Stopping a systemd service..' --weight=1
 
-ynh_systemd_action --service_name=$app --action="stop" --log_path="/var/log/$app/$app.log"
+ynh_systemd_action --service_name=$app --action=stop --log_path="/var/log/$app/$app.log"
 
 #=================================================
 # "REBUILD" THE APP (DEPLOY NEW SOURCES, RERUN NPM BUILD...)
@@ -28,7 +28,7 @@ ynh_systemd_action --service_name=$app --action="stop" --log_path="/var/log/$app
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 
-if [ "$upgrade_type" == "UPGRADE_APP" ]
+if [ "$upgrade_type" == UPGRADE_APP ]
 then
     ynh_setup_source --dest_dir="$install_dir"
 fi
@@ -63,25 +63,22 @@ set_permissions
 #=================================================
 # UPGRADE EXTENSIONS
 #=================================================
-ynh_script_progression --message="Starting a systemd service..." --weight=1
+enable_super_admin
 
 # Start a systemd service
 ynh_systemd_action --service_name=$app --action=start --log_path=systemd --line_match="$systemd_match_start_line"
 
-# Install extensions
-
 if [ $install_standard_flavor -eq 1 ]; then
-    ynh_script_progression --message="Installing flavor..."
+    ynh_script_progression --message='Installing flavor...'
     wait_for_flavor_install
 fi
 
-ynh_script_progression --message="Installing LDAP extension..." --weight=1
-install_exension org.xwiki.contrib.ldap:ldap-authenticator $ldap_version
+ynh_script_progression --message='Installing LDAP extension...' --weight=1
+install_exension 'org.xwiki.contrib.ldap:ldap-authenticator' "$ldap_version"
 
 # Disable super admin
 ynh_systemd_action --service_name=$app --action=stop
 disable_super_admin
-ynh_systemd_action --service_name=$app --action=start --log_path=systemd --line_match="$systemd_match_start_line"
 
 #=================================================
 # GENERIC FINALIZATION
@@ -89,7 +86,7 @@ ynh_systemd_action --service_name=$app --action=start --log_path=systemd --line_
 # START SYSTEMD SERVICE
 #=================================================
 
-ynh_script_progression --message="Starting a systemd service..." --weight=1
+ynh_script_progression --message='Starting a systemd service...' --weight=1
 ynh_systemd_action --service_name=$app --action=start --log_path=systemd --line_match="$systemd_match_start_line"
 
 #=================================================

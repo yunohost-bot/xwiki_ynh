@@ -25,7 +25,7 @@ fi
 mkdir -p /var/log/"$app"
 ln -s /var/log/"$app" "$install_dir"/logs
 
-ynh_script_progression --message="Setting up source files..." --weight=1
+ynh_script_progression --message='Setting up source files...' --weight=1
 
 ynh_setup_source --dest_dir="$install_dir"
 ynh_setup_source --dest_dir="$install_dir"/webapps/xwiki/WEB-INF/lib/ --source_id=jdbc
@@ -53,25 +53,24 @@ ynh_add_config --template=hibernate.cfg.xml --destination="$install_dir"/webapps
 ynh_add_config --template=xwiki.cfg --destination="$install_dir"/webapps/xwiki/WEB-INF/xwiki.cfg
 ynh_add_config --template=xwiki.properties --destination="$install_dir"/webapps/xwiki/WEB-INF/xwiki.properties
 
-enable_super_admin
 set_permissions
 
 #=================================================
 # INSTALL EXTENSIONS
 #=================================================
 
+enable_super_admin
+
 # Start a systemd service
 ynh_systemd_action --service_name=$app --action=start --log_path=systemd --line_match="$systemd_match_start_line"
 
-# Install extensions
-
 if [ $install_standard_flavor -eq 1 ]; then
-    ynh_script_progression --message="Installing flavor..."
+    ynh_script_progression --message='Installing flavor...'
     wait_for_flavor_install
 fi
 
-ynh_script_progression --message="Installing LDAP extension..." --weight=1
-install_exension org.xwiki.contrib.ldap:ldap-authenticator $ldap_version
+ynh_script_progression --message='Installing LDAP extension...' --weight=1
+install_exension 'org.xwiki.contrib.ldap:ldap-authenticator' "$ldap_version"
 
 # Disable super admin
 ynh_systemd_action --service_name=$app --action=stop
@@ -83,7 +82,7 @@ disable_super_admin
 # START SYSTEMD SERVICE
 #=================================================
 
-ynh_script_progression --message="Starting a systemd service..." --weight=1
+ynh_script_progression --message='Starting a systemd service...' --weight=1
 ynh_systemd_action --service_name=$app --action=start --log_path=systemd --line_match="$systemd_match_start_line"
 
 #=================================================
