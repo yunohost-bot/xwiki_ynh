@@ -5,7 +5,7 @@ name = "xWiki"
 description.en = "Collaboration tool based on the wiki principle"
 description.fr = "Outil de collaboration basé sur le principe du wiki"
 
-version = "14.10.8~ynh1"
+version = "15.10~ynh1"
 
 maintainers = [""]
 
@@ -21,15 +21,21 @@ code = "https://github.com/xwiki/xwiki-platform"
 yunohost = ">= 11.1.17"
 architectures = "all"
 multi_instance = true
-ldap = false
+ldap = true
 sso = false
-disk = "50M"
-ram.build = "50M"
-ram.runtime = "50M"
+disk = "500M"
+ram.build = "0M"
+ram.runtime = "1G"
 
 [install]
     [install.domain]
     type = "domain"
+
+    [install.install_standard_flavor]
+    ask.en = "Would you like to install the Standard Flavor ?"
+    help.en = "See https://extensions.xwiki.org/xwiki/bin/view/Extension/XWiki%20Standard%20Flavor/ for more informations."
+    type = "boolean"
+    default = true
 
     [install.init_main_permission]
     type = "group"
@@ -40,22 +46,54 @@ ram.runtime = "50M"
     [resources.sources]
 
         [resources.sources.main]
-        url = "https://nexus.xwiki.org/nexus/content/groups/public/org/xwiki/platform/xwiki-platform-distribution-jetty-hsqldb/14.10.8/xwiki-platform-distribution-jetty-hsqldb-14.10.8.zip"
-        sha256 = "42bb11563587860d2268f3226b90c6ae5cf5930e027fe0e3386fb2de29445a2b"
+        url = "https://nexus.xwiki.org/nexus/content/groups/public/org/xwiki/platform/xwiki-platform-distribution-jetty-hsqldb/15.10/xwiki-platform-distribution-jetty-hsqldb-15.10.zip"
+        sha256 = "ca8f7f17ed93470c2776e85815f84eab4433f18c6bccb53a705ce2b8a73771e7"
+        format = "zip"
+
+        [resources.sources.jdbc]
+        url = "https://jdbc.postgresql.org/download/postgresql-42.7.0.jar"
+        rename = "postgresql-42.7.0.jar"
+        sha256 = "90c39c97ac309b5767882f9beef913244da029204af2d2982c2b45bcfcb42624"
+
+        # Note that xq is available on debian package since debian 12
+        # So on bookworm should just remove this and use official package
+        [resources.sources.xq_tool]
+        in_subdir= false
+
+        i386.url = "https://github.com/sibprogrammer/xq/releases/download/v1.2.3/xq_1.2.3_linux_386.tar.gz"
+        i386.sha256 = "fc500e887d825f6cbedecdbfb3a272e1a88473b1f1a1b92075cab429d3d6fc64"
+
+        amd64.url = "https://github.com/sibprogrammer/xq/releases/download/v1.2.3/xq_1.2.3_linux_amd64.tar.gz"
+        amd64.sha256 = "d510d97a247ad9b5a4e92759ea9b1b6be07d9f18187209b359525744e1bb8947"
+
+        armhf.url = "https://github.com/sibprogrammer/xq/releases/download/v1.2.3/xq_1.2.3_linux_armv7.tar.gz"
+        armhf.sha256 = "f9b01ba7d77965f292f3c1b8c164267367507e16a8951b67733a539d7f73eecb"
+
+        arm64.url = "https://github.com/sibprogrammer/xq/releases/download/v1.2.3/xq_1.2.3_linux_arm64.tar.gz"
+        arm64.sha256 = "a8989b2b1a5254033aebacb72ffea77964d6903d809361001dbf1ed09a0c6550"
+
+        #
+        # INFO need also to update extensions version on _common.sh
+        #
 
     [resources.ports]
-    main.default = 31386
-    stop.default = 31387
+    main.default = 8080
+    # stop.default = 8081
 
     [resources.system_user]
+    allow_email = true
 
     [resources.install_dir]
+    dir = "/opt/yunohost/__APP__"
+
+    [resources.data_dir]
+    dir = "/home/yunohost.app/__APP__"
 
     [resources.permissions]
     main.url = "/"
 
     [resources.apt]
-    packages = "openjdk-17-jdk" #mariadb-server
+    packages = ["openjdk-17-jre", "postgresql"]
 
-    #[resources.database]
-    #type = "mysql"
+    [resources.database]
+    type = "postgresql"

@@ -6,9 +6,9 @@ After=network.target
 Type=simple
 User=__APP__
 Group=__APP__
-EnvironmentFile=__INSTALL_DIR__/xwiki_env
+Environment=JETTY_HOME=__INSTALL_DIR__/jetty
 WorkingDirectory=__INSTALL_DIR__/
-ExecStart=/bin/bash start_xwiki.sh -p __PORT__ -sp __PORT_STOP__ -ni
+ExecStart=/usr/bin/java -jar __INSTALL_DIR__/jetty/start.jar jetty.http.port=__PORT__ jetty.http.host=127.0.0.1
 ExecStop=/bin/bash stop_xwiki.sh
 Restart=always
 RestartSec=10
@@ -33,7 +33,7 @@ ProtectKernelModules=yes
 ProtectKernelTunables=yes
 LockPersonality=yes
 SystemCallArchitectures=native
-SystemCallFilter=~@clock @debug @module @mount @obsolete @reboot @setuid @swap @cpu-emulation @privileged
+SystemCallFilter=~@clock @debug @module @mount @obsolete @reboot @setuid @swap @cpu-emulation
 
 # Denying access to capabilities that should not be relevant for webapps
 # Doc: https://man7.org/linux/man-pages/man7/capabilities.7.html

@@ -11,6 +11,10 @@ source /usr/share/yunohost/helpers
 
 upgrade_type=$(ynh_check_app_version_changed)
 
+if [ $(ynh_compare_current_package_version --comparison le --version '14.10.8~ynh1') -eq 0 ]; then
+    ynh_die --mesage='Upgrade from this version is not suppoted. Please backup and restore manually the data after a clean new install'
+fi
+
 #=================================================
 # STOP SYSTEMD SERVICE
 #=================================================
@@ -26,33 +30,67 @@ ynh_systemd_action --service_name=$app --action="stop" --log_path="/var/log/$app
 
 if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
-	ynh_script_progression --message="Upgrading source files..." --weight=1
-
-	# Download, check integrity, uncompress and patch the source from app.src
-	ynh_setup_source --dest_dir="$install_dir" --keep ="xwiki_env"
+    ynh_setup_source --dest_dir="$install_dir"
 fi
-
-chmod -R o-rwx "$install_dir"
-chown -R $app:www-data "$install_dir"
-chmod +x "$install_dir/start_xwiki.sh"
+ynh_setup_source --dest_dir="$install_dir"/webapps/xwiki/WEB-INF/lib/ --source_id=jdbc
+ynh_setup_source --dest_dir="$install_dir"/xq_tool --source_id=xq_tool
 
 #=================================================
 # REAPPLY SYSTEM CONFIGURATIONS
 #=================================================
-ynh_script_progression --message="Upgrading system configurations related to $app..." --weight=1
+ynh_script_progression --message="Adding system configurations related to $app..." --weight=1
 
+# Create a dedicated NGINX config using the conf/nginx.conf template
 ynh_add_nginx_config
 
+# Create a dedicated systemd config
 ynh_add_systemd_config
 
-yunohost service add $app --description="Collaboration tool" --log="/var/log/$app/$app.log"
+yunohost service add "$app" --description=XWiki --log="/var/log/$app/$app.log"
 
 #=================================================
-# START SYSTEMD SERVICE
+# ADD A CONFIGURATION
+#=================================================
+ynh_script_progression --message='Adding a configuration file...' --weight=1
+
+ynh_add_config --template=hibernate.cfg.xml --destination="$install_dir"/webapps/xwiki/WEB-INF/hibernate.cfg.xml
+ynh_add_config --template=xwiki.cfg --destination="$install_dir"/webapps/xwiki/WEB-INF/xwiki.cfg
+ynh_add_config --template=xwiki.properties --destination="$install_dir"/webapps/xwiki/WEB-INF/xwiki.properties
+
+enable_super_admin
+set_permissions
+
+#=================================================
+# UPGRADE EXTENSIONS
 #=================================================
 ynh_script_progression --message="Starting a systemd service..." --weight=1
 
-ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log"
+# Start a systemd service
+ynh_systemd_action --service_name=$app --action=start --log_path=systemd --line_match="$systemd_match_start_line"
+
+# Install extensions
+
+if [ $install_standard_flavor -eq 1 ]; then
+    ynh_script_progression --message="Installing flavor..."
+    wait_for_flavor_install
+fi
+
+ynh_script_progression --message="Installing LDAP extension..." --weight=1
+install_exension org.xwiki.contrib.ldap:ldap-authenticator $ldap_version
+
+# Disable super admin
+ynh_systemd_action --service_name=$app --action=stop
+disable_super_admin
+ynh_systemd_action --service_name=$app --action=start --log_path=systemd --line_match="$systemd_match_start_line"
+
+#=================================================
+# GENERIC FINALIZATION
+#=================================================
+# START SYSTEMD SERVICE
+#=================================================
+
+ynh_script_progression --message="Starting a systemd service..." --weight=1
+ynh_systemd_action --service_name=$app --action=start --log_path=systemd --line_match="$systemd_match_start_line"
 
 #=================================================
 # END OF SCRIPT
