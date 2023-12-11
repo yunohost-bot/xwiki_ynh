@@ -78,7 +78,6 @@ ram.runtime = "1G"
 
     [resources.ports]
     main.default = 8080
-    # stop.default = 8081
 
     [resources.system_user]
     allow_email = true
