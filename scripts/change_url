@@ -33,6 +33,7 @@ ynh_change_url_nginx_config
 ynh_script_progression --message="Starting a systemd service..." --weight=1
 
 ynh_systemd_action --service_name=$app --action=start --log_path=systemd --line_match="$systemd_match_start_line"
+wait_xwiki_started
 
 #=================================================
 # END OF SCRIPT

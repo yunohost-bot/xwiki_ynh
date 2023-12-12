@@ -74,6 +74,14 @@ install_exension() {
     done
 }
 
+wait_xwiki_started() {
+    local res
+    while echo "$res" | grep -q 'meta http-equiv="refresh" content="1"'; do
+        res=($curl "http://localhost:$port/xwiki/bin/view/Main/")
+        sleep 10
+    done
+}
+
 wait_for_flavor_install() {
     local flavor_job_id='org.xwiki.platform%3Axwiki-platform-distribution-flavor-mainwiki/wiki%3Axwiki'
     local status_raw
@@ -82,9 +90,7 @@ wait_for_flavor_install() {
     local curl='curl --silent --show-error'
 
     # Need to call main page to start xwiki service
-    $curl "http://localhost:$port/xwiki/bin/view/Main/" > /dev/null &
-
-    sleep 20
+    wait_xwiki_started
 
     while true; do
         status_raw=$($curl --user "superadmin:$super_admin_pwd" -X GET -H 'Content-Type: text/xml' "http://localhost:$port/xwiki/rest/jobstatus/extension/action/$flavor_job_id")
