@@ -30,10 +30,8 @@ ynh_systemd_action --service_name=$app --action=stop --log_path="/var/log/$app/$
 
 if [ "$upgrade_type" == UPGRADE_APP ]
 then
-    ynh_setup_source --dest_dir="$install_dir"
+    install_source
 fi
-ynh_setup_source --dest_dir="$install_dir"/webapps/xwiki/WEB-INF/lib/ --source_id=jdbc
-ynh_setup_source --dest_dir="$install_dir"/xq_tool --source_id=xq_tool
 
 #=================================================
 # REAPPLY SYSTEM CONFIGURATIONS
@@ -53,9 +51,7 @@ yunohost service add "$app" --description=XWiki --log="/var/log/$app/$app.log"
 #=================================================
 ynh_script_progression --message='Adding a configuration file...' --weight=1
 
-ynh_add_config --template=hibernate.cfg.xml --destination="$install_dir"/webapps/xwiki/WEB-INF/hibernate.cfg.xml
-ynh_add_config --template=xwiki.cfg --destination="$install_dir"/webapps/xwiki/WEB-INF/xwiki.cfg
-ynh_add_config --template=xwiki.properties --destination="$install_dir"/webapps/xwiki/WEB-INF/xwiki.properties
+add_config
 
 enable_super_admin
 set_permissions

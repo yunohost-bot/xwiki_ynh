@@ -22,16 +22,16 @@ fi
 enable_super_admin() {
     super_admin_pwd=$(ynh_string_random)
     super_admin_config="xwiki.superadminpassword=$super_admin_pwd"
-    ynh_add_config --template=xwiki.cfg --destination="$install_dir"/webapps/xwiki/WEB-INF/xwiki.cfg
-    chmod 400 "$install_dir"/webapps/xwiki/WEB-INF/xwiki.cfg
-    chown "$app:$app" "$install_dir"/webapps/xwiki/WEB-INF/xwiki.cfg
+    ynh_add_config --template=xwiki.cfg --destination=/etc/$app/xwiki.cfg
+    chmod 400 /etc/$app/xwiki.cfg
+    chown "$app:$app" /etc/$app/xwiki.cfg
 }
 
 disable_super_admin() {
     super_admin_config='#'
-    ynh_add_config --template=xwiki.cfg --destination="$install_dir"/webapps/xwiki/WEB-INF/xwiki.cfg
-    chmod 400 "$install_dir"/webapps/xwiki/WEB-INF/xwiki.cfg
-    chown "$app:$app" "$install_dir"/webapps/xwiki/WEB-INF/xwiki.cfg
+    ynh_add_config --template=xwiki.cfg --destination=/etc/$app/xwiki.cfg
+    chmod 400 /etc/$app/xwiki.cfg
+    chown "$app:$app" /etc/$app/xwiki.cfg
 }
 
 install_exension() {
@@ -113,10 +113,31 @@ wait_for_flavor_install() {
     done
 }
 
+install_source() {
+    ynh_setup_source --dest_dir="$install_dir" --full_replace=1
+    ynh_setup_source --dest_dir="$install_dir"/webapps/xwiki/WEB-INF/lib/ --source_id=jdbc
+    ynh_setup_source --dest_dir="$install_dir"/xq_tool --source_id=xq_tool
+
+    ynh_secure_remove --file="$install_dir"/webapps/xwiki/WEB-INF/xwiki.cfg
+    ynh_secure_remove --file="$install_dir"/webapps/xwiki/WEB-INF/xwiki.properties
+
+    ln -s /var/log/"$app" "$install_dir"/logs
+    ln -s /etc/$app/xwiki.cfg "$install_dir"/webapps/xwiki/WEB-INF/xwiki.cfg
+    ln -s /etc/$app/xwiki.properties "$install_dir"/webapps/xwiki/WEB-INF/xwiki.properties
+}
+
+add_config() {
+    ynh_add_config --template=hibernate.cfg.xml --destination=/etc/$app/hibernate.cfg.xml
+    ynh_add_config --template=xwiki.cfg --destination=/etc/$app/xwiki.cfg
+    ynh_add_config --template=xwiki.properties --destination=/etc/$app/xwiki.properties
+}
 
 set_permissions() {
     chmod -R u+rwX,o-rwx "$install_dir"
     chown -R "$app:$app" "$install_dir"
+
+    chmod -R u=rwX,g=rX,o= /etc/$app
+    chown -R "$app:$app" /etc/$app
 
     chown "$app:$app" -R /var/log/$app
     chmod u=rwX,g=rX,o= -R /var/log/$app

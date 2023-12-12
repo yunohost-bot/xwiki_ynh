@@ -37,7 +37,7 @@ ynh_backup --src_path="/etc/systemd/system/$app.service"
 # BACKUP DATA
 #=================================================
 
-ynh_backup --src_path="$data_path" --is_big=1
+ynh_backup --src_path="$data_dir" --is_big=1
 
 #=================================================
 # BACKUP THE MYSQL DATABASE
