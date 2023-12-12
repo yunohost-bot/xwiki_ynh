@@ -31,6 +31,10 @@ ram.runtime = "1G"
     [install.domain]
     type = "domain"
 
+    [install.path]
+    type = "path"
+    default = "/xwiki"
+
     [install.install_standard_flavor]
     ask.en = "Would you like to install the Standard Flavor ?"
     help.en = "See https://extensions.xwiki.org/xwiki/bin/view/Extension/XWiki%20Standard%20Flavor/ for more informations."

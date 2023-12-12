@@ -15,6 +15,16 @@ else
     distribution_default_ui='#'
 fi
 
+if [ $path == '/' ]; then
+    install_on_root=true
+    path2=''
+    path3=''
+else
+    install_on_root=false
+    path2=${path/#\//}/
+    path3=${path/#\//}
+fi
+
 #=================================================
 # PERSONAL HELPERS
 #=================================================
@@ -49,13 +59,13 @@ install_exension() {
     chown root:root $temp_dir
 
     ynh_add_config --template=install_extensions.xml --destination=$temp_dir/install_extensions.xml
-    status_raw=$($curl -i --user "superadmin:$super_admin_pwd" -X PUT -H 'Content-Type: text/xml' "http://localhost:$port/xwiki/rest/jobs?jobType=install&async=true" --upload-file $temp_dir/install_extensions.xml)
+    status_raw=$($curl -i --user "superadmin:$super_admin_pwd" -X PUT -H 'Content-Type: text/xml' "http://localhost:$port$path/rest/jobs?jobType=install&async=true" --upload-file $temp_dir/install_extensions.xml)
     state_request=$(echo $status_raw | $xq -x '//jobStatus/ns2:state')
 
     while true; do
         sleep 5
 
-        status_raw=$($curl --user "superadmin:$super_admin_pwd" -X GET -H 'Content-Type: text/xml' "http://localhost:$port/xwiki/rest/jobstatus/extension/provision/$job_id")
+        status_raw=$($curl --user "superadmin:$super_admin_pwd" -X GET -H 'Content-Type: text/xml' "http://localhost:$port$path/rest/jobstatus/extension/provision/$job_id")
         state_request=$(echo "$status_raw" | $xq -x '//jobStatus/state')
 
         if [ -z "$state_request" ]; then
@@ -77,7 +87,7 @@ install_exension() {
 wait_xwiki_started() {
     local res
     while echo "$res" | grep -q 'meta http-equiv="refresh" content="1"'; do
-        res=($curl "http://localhost:$port/xwiki/bin/view/Main/")
+        res=($curl "http://localhost:$port$path/bin/view/Main/")
         sleep 10
     done
 }
@@ -93,7 +103,7 @@ wait_for_flavor_install() {
     wait_xwiki_started
 
     while true; do
-        status_raw=$($curl --user "superadmin:$super_admin_pwd" -X GET -H 'Content-Type: text/xml' "http://localhost:$port/xwiki/rest/jobstatus/extension/action/$flavor_job_id")
+        status_raw=$($curl --user "superadmin:$super_admin_pwd" -X GET -H 'Content-Type: text/xml' "http://localhost:$port$path/rest/jobstatus/extension/action/$flavor_job_id")
         state_request=$(echo "$status_raw" | $xq -x '//jobStatus/state')
 
         if [ -z "$state_request" ]; then
@@ -124,6 +134,17 @@ install_source() {
     ln -s /var/log/"$app" "$install_dir"/logs
     ln -s /etc/$app/xwiki.cfg "$install_dir"/webapps/xwiki/WEB-INF/xwiki.cfg
     ln -s /etc/$app/xwiki.properties "$install_dir"/webapps/xwiki/WEB-INF/xwiki.properties
+
+    if $install_on_root; then
+        ynh_secure_remove --file="$install_dir"/webapps/root
+        ynh_secure_remove --file="$install_dir"/jetty/contexts/xwiki.xml
+        mv "$install_dir"/webapps/xwiki "$install_dir"/webapps/root
+    elif [ "$path" != xwiki ]; then
+        if [ "$path" == /root ]; then
+            ynh_die --message='/root path is not supported as path'
+        fi
+        mv "$install_dir"/webapps/xwiki "$install_dir"/webapps$path
+    fi
 }
 
 add_config() {
