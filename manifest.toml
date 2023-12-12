@@ -41,6 +41,10 @@ ram.runtime = "1G"
     type = "group"
     default = "visitors"
 
+    [install.init_admin_permission]
+    type = "group"
+    default = "admins"
+
 [resources]
 
     [resources.sources]
@@ -90,6 +94,8 @@ ram.runtime = "1G"
 
     [resources.permissions]
     main.url = "/"
+
+    admin.label = "Admins"
 
     [resources.apt]
     packages = ["openjdk-17-jre", "postgresql"]
