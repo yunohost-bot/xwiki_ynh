@@ -51,6 +51,13 @@ install_exension() {
     local job_id=$(ynh_string_random)
     local xq=$install_dir/xq_tool/xq
     local curl='curl --silent --show-error'
+    local extension_name_path=$(echo ${extension_id//./%2E} | sed 's|:|%3A|g')
+    local extension_version_path=${extension_version//./%2E}
+
+    if [ -e "$data_dir/extension/repository/$extension_name_path/$extension_version_path" ]; then
+        # Return if extension is already installed
+        return 0
+    fi
 
     local status_raw
     local state_request
