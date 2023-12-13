@@ -24,6 +24,7 @@ fi
 #=================================================
 
 ynh_backup --src_path="$install_dir"
+ynh_backup --src_path="/etc/$app"
 
 #=================================================
 # BACKUP THE NGINX CONFIGURATION
