@@ -25,6 +25,10 @@ ynh_script_progression --message="Updating NGINX web server configuration..." --
 
 ynh_change_url_nginx_config
 
+ynh_script_progression --message="Updating xwiki configuration..." --weight=1
+add_config
+set_permissions
+
 #=================================================
 # GENERIC FINALISATION
 #=================================================
