@@ -52,8 +52,6 @@ yunohost service add "$app" --description=XWiki --log="/var/log/$app/$app.log"
 ynh_script_progression --message='Adding configuration files...' --weight=1
 
 add_config
-
-enable_super_admin
 set_permissions
 
 #=================================================
