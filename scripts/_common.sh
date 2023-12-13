@@ -66,13 +66,13 @@ install_exension() {
     chown root:root $temp_dir
 
     ynh_add_config --template=install_extensions.xml --destination=$temp_dir/install_extensions.xml
-    status_raw=$($curl -i --user "superadmin:$super_admin_pwd" -X PUT -H 'Content-Type: text/xml' "http://localhost:$port$path/rest/jobs?jobType=install&async=true" --upload-file $temp_dir/install_extensions.xml)
+    status_raw=$($curl -i --user "superadmin:$super_admin_pwd" -X PUT -H 'Content-Type: text/xml' "http://127.0.0.1:$port$path/rest/jobs?jobType=install&async=true" --upload-file $temp_dir/install_extensions.xml)
     state_request=$(echo $status_raw | $xq -x '//jobStatus/ns2:state')
 
     while true; do
         sleep 5
 
-        status_raw=$($curl --user "superadmin:$super_admin_pwd" -X GET -H 'Content-Type: text/xml' "http://localhost:$port$path/rest/jobstatus/extension/provision/$job_id")
+        status_raw=$($curl --user "superadmin:$super_admin_pwd" -X GET -H 'Content-Type: text/xml' "http://127.0.0.1:$port$path/rest/jobstatus/extension/provision/$job_id")
         state_request=$(echo "$status_raw" | $xq -x '//jobStatus/state')
 
         if [ -z "$state_request" ]; then
@@ -96,7 +96,7 @@ wait_xwiki_started() {
     local curl='curl --silent --show-error'
 
     while echo "$res" | grep -q 'meta http-equiv="refresh" content="1"'; do
-        res=$($curl "http://localhost:$port$path/bin/view/Main/")
+        res=$($curl "http://127.0.0.1:$port$path/bin/view/Main/")
         sleep 10
     done
 }
@@ -112,7 +112,7 @@ wait_for_flavor_install() {
     wait_xwiki_started
 
     while true; do
-        status_raw=$($curl --user "superadmin:$super_admin_pwd" -X GET -H 'Content-Type: text/xml' "http://localhost:$port$path/rest/jobstatus/extension/action/$flavor_job_id")
+        status_raw=$($curl --user "superadmin:$super_admin_pwd" -X GET -H 'Content-Type: text/xml' "http://127.0.0.1:$port$path/rest/jobstatus/extension/action/$flavor_job_id")
         state_request=$(echo "$status_raw" | $xq -x '//jobStatus/state')
 
         if [ -z "$state_request" ]; then
