@@ -45,7 +45,7 @@ yunohost service add "$app" --description=XWiki --log="/var/log/$app/$app.log"
 #=================================================
 # ADD A CONFIGURATION
 #=================================================
-ynh_script_progression --message='Adding a configuration file...' --weight=1
+ynh_script_progression --message='Adding configuration files...' --weight=1
 
 add_config
 set_permissions

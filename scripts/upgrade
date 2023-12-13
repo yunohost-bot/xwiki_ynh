@@ -49,7 +49,7 @@ yunohost service add "$app" --description=XWiki --log="/var/log/$app/$app.log"
 #=================================================
 # ADD A CONFIGURATION
 #=================================================
-ynh_script_progression --message='Adding a configuration file...' --weight=1
+ynh_script_progression --message='Adding configuration files...' --weight=1
 
 add_config
 
@@ -65,11 +65,11 @@ enable_super_admin
 ynh_systemd_action --service_name=$app --action=start --log_path=systemd --line_match="$systemd_match_start_line"
 
 if [ $install_standard_flavor -eq 1 ]; then
-    ynh_script_progression --message='Installing flavor...'
+    ynh_script_progression --message='Upgrading flavor...'
     wait_for_flavor_install
 fi
 
-ynh_script_progression --message='Installing LDAP extension...' --weight=1
+ynh_script_progression --message='Upgrading LDAP extension...' --weight=1
 install_exension 'org.xwiki.contrib.ldap:ldap-authenticator' "$ldap_version"
 
 # Disable super admin
