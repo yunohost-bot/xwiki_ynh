@@ -9,7 +9,6 @@ Group=__APP__
 Environment=JETTY_HOME=__INSTALL_DIR__/jetty
 WorkingDirectory=__INSTALL_DIR__/
 ExecStart=/usr/bin/java -jar __INSTALL_DIR__/jetty/start.jar jetty.http.port=__PORT__ jetty.http.host=127.0.0.1
-ExecStop=/bin/bash stop_xwiki.sh
 Restart=always
 RestartSec=10
 
