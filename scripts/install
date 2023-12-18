@@ -12,8 +12,6 @@ source /usr/share/yunohost/helpers
 #=================================================
 # APP "BUILD" (DEPLOYING SOURCES, VENV, COMPILING ETC)
 #=================================================
-# DOWNLOAD, CHECK AND UNPACK SOURCE
-#=================================================
 
 if [ -n "$(ls -A $data_dir)" ]; then
     old_data_dir_path="${data_dir}_$(date '+%Y%m%d.%H%M%S')"
@@ -25,9 +23,21 @@ fi
 mkdir -p /var/log/"$app"
 mkdir -p /etc/$app
 
+#=================================================
+# DOWNLOAD, CHECK AND UNPACK SOURCE
+#=================================================
+
 ynh_script_progression --message='Setting up source files...' --weight=1
 
 install_source
+
+#=================================================
+# ADD A CONFIGURATION
+#=================================================
+ynh_script_progression --message='Adding configuration files...' --weight=1
+
+add_config
+set_permissions
 
 #=================================================
 # SYSTEM CONFIGURATION
@@ -43,14 +53,6 @@ ynh_add_systemd_config
 yunohost service add "$app" --description=XWiki --log="/var/log/$app/$app.log"
 
 ynh_use_logrotate --logfile "/var/log/$app"
-
-#=================================================
-# ADD A CONFIGURATION
-#=================================================
-ynh_script_progression --message='Adding configuration files...' --weight=1
-
-add_config
-set_permissions
 
 #=================================================
 # INSTALL EXTENSIONS

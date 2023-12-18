@@ -19,10 +19,12 @@ if [ $path == '/' ]; then
     install_on_root=true
     path2=''
     path3=''
+    web_inf_path="$install_dir"/webapps/root/WEB-INF
 else
     install_on_root=false
     path2=${path/#\//}/ # path=/xwiki -> xwiki/
     path3=${path/#\//} # path=/xwiki -> xwiki
+    web_inf_path="$install_dir"/webapps$path/WEB-INF
 fi
 
 #=================================================
@@ -32,16 +34,18 @@ fi
 enable_super_admin() {
     super_admin_pwd=$(ynh_string_random)
     super_admin_config="xwiki.superadminpassword=$super_admin_pwd"
-    ynh_add_config --template=xwiki.cfg --destination=/etc/$app/xwiki.cfg
-    chmod 400 /etc/$app/xwiki.cfg
-    chown "$app:$app" /etc/$app/xwiki.cfg
+    ynh_add_config --template=xwiki.cfg --destination=/etc/$app/xwiki_conf.cfg
+    ln -f /etc/$app/xwiki_conf.cfg "$web_inf_path"/xwiki.cfg
+    chmod 400 /etc/$app/xwiki_conf.cfg
+    chown "$app:$app" /etc/$app/xwiki_conf.cfg
 }
 
 disable_super_admin() {
     super_admin_config='#'
-    ynh_add_config --template=xwiki.cfg --destination=/etc/$app/xwiki.cfg
-    chmod 400 /etc/$app/xwiki.cfg
-    chown "$app:$app" /etc/$app/xwiki.cfg
+    ynh_add_config --template=xwiki.cfg --destination=/etc/$app/xwiki_conf.cfg
+    ln -f /etc/$app/xwiki_conf.cfg "$web_inf_path"/xwiki.cfg
+    chmod 400 /etc/$app/xwiki_conf.cfg
+    chown "$app:$app" /etc/$app/xwiki_conf.cfg
 }
 
 install_exension() {
@@ -139,27 +143,29 @@ install_source() {
 
     ynh_secure_remove --file="$install_dir"/webapps/xwiki/WEB-INF/xwiki.cfg
     ynh_secure_remove --file="$install_dir"/webapps/xwiki/WEB-INF/xwiki.properties
+    ynh_secure_remove --file="$install_dir"/webapps/root
 
     ln -s /var/log/"$app" "$install_dir"/logs
-    ln -s /etc/$app/xwiki.cfg "$install_dir"/webapps/xwiki/WEB-INF/xwiki.cfg
-    ln -s /etc/$app/xwiki.properties "$install_dir"/webapps/xwiki/WEB-INF/xwiki.properties
 
     if $install_on_root; then
-        ynh_secure_remove --file="$install_dir"/webapps/root
-        ynh_secure_remove --file="$install_dir"/jetty/contexts/xwiki.xml
         mv "$install_dir"/webapps/xwiki "$install_dir"/webapps/root
-    elif [ "$path" != xwiki ]; then
-        if [ "$path" == /root ]; then
-            ynh_die --message='/root path is not supported as path'
-        fi
+    elif [ "$path" != /root ]; then
+        ynh_die --message='Path "/root" not supported'
+    elif [ "$path" != /xwiki ]; then
         mv "$install_dir"/webapps/xwiki "$install_dir"/webapps$path
     fi
 }
 
 add_config() {
     ynh_add_config --template=hibernate.cfg.xml --destination=/etc/$app/hibernate.cfg.xml
-    ynh_add_config --template=xwiki.cfg --destination=/etc/$app/xwiki.cfg
-    ynh_add_config --template=xwiki.properties --destination=/etc/$app/xwiki.properties
+    ynh_add_config --template=xwiki.cfg --destination=/etc/$app/xwiki_conf.cfg
+    ynh_add_config --template=xwiki.properties --destination=/etc/$app/xwiki_conf.properties
+
+    # Note that using /etc/xwiki/xwiki.cfg or /etc/xwiki/xwiki.properties is hard coded on the application
+    # And using this break multi instance feature so we must use an other path
+    # Note that symlink don't work. So use hard link instead.
+    ln -f /etc/$app/xwiki_conf.cfg "$web_inf_path"/xwiki.cfg
+    ln -f /etc/$app/xwiki_conf.properties "$web_inf_path"/xwiki.properties
 }
 
 set_permissions() {
