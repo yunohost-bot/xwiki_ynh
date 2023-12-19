@@ -18,11 +18,14 @@ userdoc = "https://www.xwiki.org/xwiki/bin/view/Documentation/UserGuide/"
 code = "https://github.com/xwiki/xwiki-platform"
 
 [integration]
-yunohost = ">= 11.1.17"
+yunohost = ">= 11.2"
 architectures = "all"
 multi_instance = true
+
 ldap = true
+
 sso = false
+
 disk = "500M"
 ram.build = "0M"
 ram.runtime = "1G"
@@ -36,7 +39,7 @@ ram.runtime = "1G"
     default = "/xwiki"
 
     [install.install_standard_flavor]
-    ask.en = "Would you like to install the Standard Flavor ?"
+    ask.en = "Would you like to install the Standard Flavor?"
     help.en = "See https://extensions.xwiki.org/xwiki/bin/view/Extension/XWiki%20Standard%20Flavor/ for more informations."
     type = "boolean"
     default = true
