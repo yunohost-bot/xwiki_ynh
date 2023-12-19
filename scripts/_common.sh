@@ -149,7 +149,7 @@ install_source() {
 
     if $install_on_root; then
         mv "$install_dir"/webapps/xwiki "$install_dir"/webapps/root
-    elif [ "$path" != /root ]; then
+    elif [ "$path" == /root ]; then
         ynh_die --message='Path "/root" not supported'
     elif [ "$path" != /xwiki ]; then
         mv "$install_dir"/webapps/xwiki "$install_dir"/webapps$path
