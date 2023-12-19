@@ -58,8 +58,8 @@ ram.runtime = "1G"
     [resources.sources]
 
         [resources.sources.main]
-        url = "https://nexus.xwiki.org/nexus/content/groups/public/org/xwiki/platform/xwiki-platform-distribution-jetty-hsqldb/15.10/xwiki-platform-distribution-jetty-hsqldb-15.10.zip"
-        sha256 = "ca8f7f17ed93470c2776e85815f84eab4433f18c6bccb53a705ce2b8a73771e7"
+        url = "https://nexus.xwiki.org/nexus/content/groups/public/org/xwiki/platform/xwiki-platform-distribution-jetty-hsqldb/15.10.1/xwiki-platform-distribution-jetty-hsqldb-15.10.1.zip"
+        sha256 = "76efd6e1c58b8557034a3e25271963392b8b5e125af97d932210823510586e9f"
         format = "zip"
 
         [resources.sources.jdbc]
