@@ -18,7 +18,7 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 
 XWiki is an Open Source wiki engine (LGPLv2) suitable for use by workgroups (associations, companies, etc.). The software allows the rapid creation of small applications to meet different information management needs.
 
-**Shipped version:** 15.10~ynh1
+**Shipped version:** 15.10.1~ynh1
 
 **Demo:** https://playground.xwiki.org/xwiki/bin/view/Main/WebHome
 

@@ -6,7 +6,7 @@
 
 super_admin_config='#'
 systemd_match_start_line='oxtjl.NotifyListener:main: ----------------------------------'
-flavor_version='15.10'
+flavor_version='15.10.1'
 ldap_version='9.12.0'
 
 if [ $install_standard_flavor -eq 1 ]; then
