@@ -5,7 +5,7 @@ name = "xWiki"
 description.en = "Collaboration tool based on the wiki principle"
 description.fr = "Outil de collaboration basé sur le principe du wiki"
 
-version = "15.10~ynh1"
+version = "15.10.1~ynh1"
 
 maintainers = [""]
 
