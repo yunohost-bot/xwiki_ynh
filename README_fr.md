@@ -18,7 +18,7 @@ Si vous n’avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) po
 
 XWiki est un moteur de wiki Open Source (LGPLv2) adapté à un usage pour des groupes de travail (associations, entreprises…). Le logiciel permet la création rapide de petites applications pour répondre à différents besoins de gestion de l'information.
 
-**Version incluse :** 14.10.8~ynh1
+**Version incluse :** 15.10.1~ynh1
 
 **Démo :** https://playground.xwiki.org/xwiki/bin/view/Main/WebHome
 
@@ -32,7 +32,7 @@ XWiki est un moteur de wiki Open Source (LGPLv2) adapté à un usage pour des gr
 * Documentation officielle utilisateur : <https://www.xwiki.org/xwiki/bin/view/Documentation/UserGuide/>
 * Documentation officielle de l’admin : <https://www.xwiki.org/xwiki/bin/view/Documentation/AdminGuide/>
 * Dépôt de code officiel de l’app : <https://github.com/xwiki/xwiki-platform>
-* Documentation YunoHost pour cette app : <https://yunohost.org/app_xwiki>
+* YunoHost Store: <https://apps.yunohost.org/app/xwiki>
 * Signaler un bug : <https://github.com/YunoHost-Apps/xwiki_ynh/issues>
 
 ## Informations pour les développeurs

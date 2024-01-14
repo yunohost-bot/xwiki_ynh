@@ -16,7 +16,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 ynh_script_progression --message="Stopping a systemd service..." --weight=1
 
-ynh_systemd_action --service_name=$app --action="stop" --log_path="/var/log/$app/$app.log"
+ynh_systemd_action --service_name=$app --action=stop
 
 #=================================================
 # MODIFY URL IN NGINX CONF
@@ -25,6 +25,22 @@ ynh_script_progression --message="Updating NGINX web server configuration..." --
 
 ynh_change_url_nginx_config
 
+ynh_script_progression --message="Updating xwiki configuration..." --weight=1
+
+if [ $new_path != $old_path ]; then
+    if $install_on_root; then
+        mv "$install_dir"/webapps$old_path "$install_dir"/webapps/root
+    elif [ "$path" == /root ]; then
+        ynh_die --message='Path "/root" not supported'
+    elif [ $old_path == / ]; then
+        mv "$install_dir"/webapps/root "$install_dir"/webapps$new_path
+    else
+        mv "$install_dir"/webapps$old_path "$install_dir"/webapps$new_path
+    fi
+fi
+add_config
+set_permissions
+
 #=================================================
 # GENERIC FINALISATION
 #=================================================
@@ -32,7 +48,8 @@ ynh_change_url_nginx_config
 #=================================================
 ynh_script_progression --message="Starting a systemd service..." --weight=1
 
-ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log"
+ynh_systemd_action --service_name=$app --action=start --log_path=systemd --line_match="$systemd_match_start_line"
+wait_xwiki_started
 
 #=================================================
 # END OF SCRIPT
