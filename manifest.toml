@@ -7,7 +7,7 @@ description.fr = "Outil de collaboration basé sur le principe du wiki"
 
 version = "15.10.1~ynh1"
 
-maintainers = [""]
+maintainers = ["Josué Tille"]
 
 [upstream]
 license = "LGPL-2.1"
