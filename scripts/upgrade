@@ -11,12 +11,16 @@ source /usr/share/yunohost/helpers
 
 upgrade_type=$(ynh_check_app_version_changed)
 
+if ynh_compare_current_package_version --comparison le --version '14.10.8~ynh1'; then
+    ynh_die --mesage='Upgrade from this version is not supported. Please backup and restore manually the data after a clean new install'
+fi
+
 #=================================================
 # STOP SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Stopping a systemd service..." --weight=1
+ynh_script_progression --message='Stopping a systemd service..' --weight=1
 
-ynh_systemd_action --service_name=$app --action="stop" --log_path="/var/log/$app/$app.log"
+ynh_systemd_action --service_name=$app --action=stop --log_path="/var/log/$app/$app.log"
 
 #=================================================
 # "REBUILD" THE APP (DEPLOY NEW SOURCES, RERUN NPM BUILD...)
@@ -24,35 +28,64 @@ ynh_systemd_action --service_name=$app --action="stop" --log_path="/var/log/$app
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 
-if [ "$upgrade_type" == "UPGRADE_APP" ]
+if [ "$upgrade_type" == UPGRADE_APP ]
 then
-	ynh_script_progression --message="Upgrading source files..." --weight=1
-
-	# Download, check integrity, uncompress and patch the source from app.src
-	ynh_setup_source --dest_dir="$install_dir" --keep ="xwiki_env"
+    ynh_script_progression --message='Setting up source files...'
+    install_source
 fi
-
-chmod -R o-rwx "$install_dir"
-chown -R $app:www-data "$install_dir"
-chmod +x "$install_dir/start_xwiki.sh"
 
 #=================================================
 # REAPPLY SYSTEM CONFIGURATIONS
 #=================================================
-ynh_script_progression --message="Upgrading system configurations related to $app..." --weight=1
+ynh_script_progression --message="Adding system configurations related to $app..." --weight=1
 
+# Create a dedicated NGINX config using the conf/nginx.conf template
 ynh_add_nginx_config
 
+# Create a dedicated systemd config
 ynh_add_systemd_config
 
-yunohost service add $app --description="Collaboration tool" --log="/var/log/$app/$app.log"
+yunohost service add "$app" --description=XWiki --log="/var/log/$app/$app.log"
 
+ynh_use_logrotate --logfile "/var/log/$app"
+
+#=================================================
+# ADD A CONFIGURATION
+#=================================================
+ynh_script_progression --message='Adding configuration files...' --weight=1
+
+add_config
+set_permissions
+
+#=================================================
+# UPGRADE EXTENSIONS
+#=================================================
+enable_super_admin
+
+# Start a systemd service
+ynh_systemd_action --service_name=$app --action=start --log_path=systemd --line_match="$systemd_match_start_line"
+
+if [ $install_standard_flavor -eq 1 ]; then
+    ynh_script_progression --message='Upgrading flavor...'
+    wait_for_flavor_install
+fi
+
+ynh_script_progression --message='Upgrading LDAP extension...' --weight=1
+install_exension 'org.xwiki.contrib.ldap:ldap-authenticator' "$ldap_version"
+
+# Disable super admin
+ynh_systemd_action --service_name=$app --action=stop
+disable_super_admin
+
+#=================================================
+# GENERIC FINALIZATION
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Starting a systemd service..." --weight=1
 
-ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log"
+ynh_script_progression --message='Starting a systemd service...' --weight=1
+ynh_systemd_action --service_name=$app --action=start --log_path=systemd --line_match="$systemd_match_start_line"
+wait_xwiki_started
 
 #=================================================
 # END OF SCRIPT
