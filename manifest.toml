@@ -1,7 +1,7 @@
 packaging_format = 2
 
 id = "xwiki"
-name = "xWiki"
+name = "XWiki"
 description.en = "Collaboration tool based on the wiki principle"
 description.fr = "Outil de collaboration basé sur le principe du wiki"
 
