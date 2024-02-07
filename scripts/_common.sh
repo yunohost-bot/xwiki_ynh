@@ -178,7 +178,7 @@ set_permissions() {
     chown "$app:$app" -R /var/log/$app
     chmod u=rwX,g=rX,o= -R /var/log/$app
 
-    find $data_dir \(   \! -perm u=rwX,g=rX,-o= \
+    find $data_dir \(   \! -perm -o= \
                     -o \! -user $app \
                     -o \! -group $app \) \
                 -exec chown $app:$app {} \; \
