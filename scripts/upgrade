@@ -9,7 +9,7 @@
 source _common.sh
 source /usr/share/yunohost/helpers
 
-upgrade_type=$(ynh_check_app_version_changed)
+upgrade_type="$(ynh_check_app_version_changed)"
 
 if ynh_compare_current_package_version --comparison=le --version='14.10.8~ynh1'; then
     ynh_die --mesage='Upgrade from this version is not supported. Please backup and restore manually the data after a clean new install'
@@ -20,7 +20,7 @@ fi
 #=================================================
 ynh_script_progression --message='Stopping a systemd service..' --weight=1
 
-ynh_systemd_action --service_name=$app --action=stop --log_path="/var/log/$app/$app.log"
+ynh_systemd_action --service_name="$app" --action=stop --log_path="/var/log/$app/$app.log"
 
 #=================================================
 # "REBUILD" THE APP (DEPLOY NEW SOURCES, RERUN NPM BUILD...)
@@ -63,9 +63,9 @@ set_permissions
 enable_super_admin
 
 # Start a systemd service
-ynh_systemd_action --service_name=$app --action=start --log_path=systemd --line_match="$systemd_match_start_line"
+ynh_systemd_action --service_name="$app" --action=start --log_path=systemd --line_match="$systemd_match_start_line"
 
-if [ $install_standard_flavor -eq 1 ]; then
+if [ "$install_standard_flavor" -eq 1 ]; then
     ynh_script_progression --message='Upgrading flavor...'
     wait_for_flavor_install
 fi
@@ -74,7 +74,7 @@ ynh_script_progression --message='Upgrading LDAP extension...' --weight=1
 install_exension 'org.xwiki.contrib.ldap:ldap-authenticator' "$ldap_version"
 
 # Disable super admin
-ynh_systemd_action --service_name=$app --action=stop
+ynh_systemd_action --service_name="$app" --action=stop
 disable_super_admin
 
 #=================================================
@@ -84,7 +84,7 @@ disable_super_admin
 #=================================================
 
 ynh_script_progression --message='Starting a systemd service...' --weight=1
-ynh_systemd_action --service_name=$app --action=start --log_path=systemd --line_match="$systemd_match_start_line"
+ynh_systemd_action --service_name="$app" --action=start --log_path=systemd --line_match="$systemd_match_start_line"
 wait_xwiki_started
 
 #=================================================
