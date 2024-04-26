@@ -52,7 +52,7 @@ ynh_add_systemd_config
 
 yunohost service add "$app" --description=XWiki --log="/var/log/$app/$app.log"
 
-ynh_use_logrotate --logfile "/var/log/$app"
+ynh_use_logrotate --logfile="/var/log/$app"
 
 #=================================================
 # INSTALL EXTENSIONS

@@ -11,7 +11,7 @@ source /usr/share/yunohost/helpers
 
 upgrade_type=$(ynh_check_app_version_changed)
 
-if ynh_compare_current_package_version --comparison le --version '14.10.8~ynh1'; then
+if ynh_compare_current_package_version --comparison=le --version='14.10.8~ynh1'; then
     ynh_die --mesage='Upgrade from this version is not supported. Please backup and restore manually the data after a clean new install'
 fi
 
@@ -47,7 +47,7 @@ ynh_add_systemd_config
 
 yunohost service add "$app" --description=XWiki --log="/var/log/$app/$app.log"
 
-ynh_use_logrotate --logfile "/var/log/$app"
+ynh_use_logrotate --logfile="/var/log/$app"
 
 #=================================================
 # ADD A CONFIGURATION
