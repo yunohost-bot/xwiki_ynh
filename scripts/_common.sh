@@ -76,7 +76,7 @@ install_exension() {
     while true; do
         sleep 5
 
-        status_raw=$($curl --user "superadmin:$super_admin_pwd" -X GET -H 'Content-Type: text/xml' "http://127.0.0.1:$port/${path2}rest/jobstatus/extension/provision/$job_id")
+        status_raw=$($curl --user "superadmin:$super_admin_pwd" -X GET -H 'Content-Type: text/xml' "http://127.0.0.1:$port/${path2}rest/jobstatus/extension/action/$job_id")
         state_request=$(echo "$status_raw" | $xq -x '//jobStatus/state')
 
         if [ -z "$state_request" ]; then
@@ -96,7 +96,7 @@ install_exension() {
 }
 
 wait_xwiki_started() {
-    local res='meta http-equiv="refresh" content="1"'$
+    local res='meta http-equiv="refresh" content="1"'
     local curl='curl --silent --show-error'
 
     while echo "$res" | grep -q 'meta http-equiv="refresh" content="1"'; do
@@ -106,31 +106,15 @@ wait_xwiki_started() {
 }
 
 wait_for_flavor_install() {
-    local flavor_job_id='org.xwiki.platform%3Axwiki-platform-distribution-flavor-mainwiki/wiki%3Axwiki'
-    local status_raw
-    local state_request
-    local xq=$install_dir/xq_tool/xq
-    local curl='curl --silent --show-error'
+    local status_header
 
     # Need to call main page to start xwiki service
     wait_xwiki_started
 
     while true; do
-        status_raw=$($curl --user "superadmin:$super_admin_pwd" -X GET -H 'Content-Type: text/xml' "http://127.0.0.1:$port/${path2}rest/jobstatus/extension/action/$flavor_job_id")
-        state_request=$(echo "$status_raw" | $xq -x '//jobStatus/state')
-
-        if [ -z "$state_request" ]; then
-            ynh_die --message="Invalid answer: '$status_raw'"
-        elif [ "$state_request" == FINISHED ]; then
-            # Check if error happen
-            error_msg=$(echo "$status_raw" | $xq -x '//jobStatus/errorMessage')
-            if [ -z "$error_msg" ]; then
-                break
-            else
-                ynh_die --message="Error while installing extension 'org.xwiki.platform%3Axwiki-platform-distribution-flavor-mainwiki'. Error: $error_msg"
-            fi
-        elif [ "$state_request" != RUNNING ]; then
-            ynh_die --message="Invalid status '$state_request'"
+        status_header="$(curl --silent --show-error -I "http://127.0.0.1:$port/${path2}bin/view/Main/")"
+        if ! echo "$status_header" | grep -q -E 'Location:[[:space:]].*/Distribution\?xredirect='; then
+            break
         fi
         sleep 10
     done
