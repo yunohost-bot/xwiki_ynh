@@ -6,8 +6,8 @@
 
 super_admin_config='#'
 systemd_match_start_line='oxtjl.NotifyListener:main: ----------------------------------'
-flavor_version='15.10.1'
-ldap_version='9.12.0'
+flavor_version='16.3.1'
+ldap_version='9.15.2'
 
 if [ $install_standard_flavor -eq 1 ]; then
     distribution_default_ui="distribution.defaultUI=org.xwiki.platform:xwiki-platform-distribution-flavor-mainwiki/$flavor_version"
