@@ -20,10 +20,11 @@ EOL
 
 check_app_version() {
     local app_remote_version=$(curl https://nexus.xwiki.org/nexus/content/groups/public/org/xwiki/platform/xwiki-platform-distribution-jetty-hsqldb/maven-metadata.xml |
-        xq --indent 0 -x '//metadata/versioning/versions' |
+        xq -x '//metadata/versioning/versions' |
         sed -E 's|\s*(.*)\s*|\1|g' |
         grep -v '\-rc-' |
         grep -v '\-milestone-' |
+        grep -v '^$' |
         python3 -c 'import sys
 from packaging.version import Version
 versions = sys.stdin.read().splitlines()
