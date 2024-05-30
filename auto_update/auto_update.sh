@@ -31,7 +31,7 @@ versions = sys.stdin.read().splitlines()
 versions.sort(key=Version)
 print(versions[-1])')
 
-    local jdbc_version=$(curl 'https://api.github.com/repos/pgjdbc/pgjdbc/releases/latest' -H 'Host: api.github.com' --compressed | jq -r ".tag_name" | cut -dL -f2)
+    jdbc_version=$(curl 'https://api.github.com/repos/pgjdbc/pgjdbc/releases/latest' -H 'Host: api.github.com' --compressed | jq -r ".tag_name" | cut -dL -f2)
 
     ## Check if new build is needed
     if [[ "$app_version" != "$app_remote_version" ]]
