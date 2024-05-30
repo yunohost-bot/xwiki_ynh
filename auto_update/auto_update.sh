@@ -4,6 +4,8 @@ set -eu
 
 readonly app_name=xwiki
 
+source auto_update_config.sh
+
 get_from_manifest() {
     result=$(python3 <<EOL
 import toml
