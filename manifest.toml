@@ -5,7 +5,7 @@ name = "XWiki"
 description.en = "Collaboration tool based on the wiki principle"
 description.fr = "Outil de collaboration basé sur le principe du wiki"
 
-version = "16.3.1~ynh1"
+version = "16.4.0~ynh1"
 
 maintainers = ["Josué Tille"]
 
@@ -61,13 +61,13 @@ ram.runtime = "1G"
     [resources.sources]
 
         [resources.sources.main]
-        url = "https://nexus.xwiki.org/nexus/content/groups/public/org/xwiki/platform/xwiki-platform-distribution-jetty-hsqldb/16.3.1/xwiki-platform-distribution-jetty-hsqldb-16.3.1.zip"
-        sha256 = "cb82326455089ef2f2d6a0631821f74530a8043aeee3486265482b58fbaa0e79"
+        url = "https://nexus.xwiki.org/nexus/content/groups/public/org/xwiki/platform/xwiki-platform-distribution-jetty-hsqldb/16.4.0/xwiki-platform-distribution-jetty-hsqldb-16.4.0.zip"
+        sha256 = "5cfc373198bb7386a573dfcbfa8352af4ce0017b49911ec724900fb58cf7bace"
         format = "zip"
 
         [resources.sources.jdbc]
         url = "https://jdbc.postgresql.org/download/postgresql-42.7.3.jar"
-        rename = "postgresql-42.7.0.jar"
+        rename = "postgresql-42.7.3.jar"
         sha256 = "a2644cbfba1baa145ff7e8c8ef582a6eed7a7ec4ca792f7f054122bdec756268"
 
         # Note that xq is available on debian package since debian 12
