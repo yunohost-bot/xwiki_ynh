@@ -5,7 +5,7 @@ name = "XWiki"
 description.en = "Collaboration tool based on the wiki principle"
 description.fr = "Outil de collaboration basé sur le principe du wiki"
 
-version = "15.10.1~ynh1"
+version = "16.4.0~ynh1"
 
 maintainers = ["Josué Tille"]
 
@@ -61,31 +61,31 @@ ram.runtime = "1G"
     [resources.sources]
 
         [resources.sources.main]
-        url = "https://nexus.xwiki.org/nexus/content/groups/public/org/xwiki/platform/xwiki-platform-distribution-jetty-hsqldb/15.10.1/xwiki-platform-distribution-jetty-hsqldb-15.10.1.zip"
-        sha256 = "76efd6e1c58b8557034a3e25271963392b8b5e125af97d932210823510586e9f"
+        url = "https://nexus.xwiki.org/nexus/content/groups/public/org/xwiki/platform/xwiki-platform-distribution-jetty-hsqldb/16.4.0/xwiki-platform-distribution-jetty-hsqldb-16.4.0.zip"
+        sha256 = "5cfc373198bb7386a573dfcbfa8352af4ce0017b49911ec724900fb58cf7bace"
         format = "zip"
 
         [resources.sources.jdbc]
-        url = "https://jdbc.postgresql.org/download/postgresql-42.7.0.jar"
-        rename = "postgresql-42.7.0.jar"
-        sha256 = "90c39c97ac309b5767882f9beef913244da029204af2d2982c2b45bcfcb42624"
+        url = "https://jdbc.postgresql.org/download/postgresql-42.7.3.jar"
+        rename = "postgresql-42.7.3.jar"
+        sha256 = "a2644cbfba1baa145ff7e8c8ef582a6eed7a7ec4ca792f7f054122bdec756268"
 
         # Note that xq is available on debian package since debian 12
         # So on bookworm should just remove this and use official package
         [resources.sources.xq_tool]
         in_subdir= false
 
-        i386.url = "https://github.com/sibprogrammer/xq/releases/download/v1.2.3/xq_1.2.3_linux_386.tar.gz"
-        i386.sha256 = "fc500e887d825f6cbedecdbfb3a272e1a88473b1f1a1b92075cab429d3d6fc64"
+        i386.url = "https://github.com/sibprogrammer/xq/releases/download/v1.2.4/xq_1.2.4_linux_386.tar.gz"
+        i386.sha256 = "f51e27493fb49dee53f3511ad6f4710f8fb7014e6ba0796d3c6d2eee6ceef914"
 
-        amd64.url = "https://github.com/sibprogrammer/xq/releases/download/v1.2.3/xq_1.2.3_linux_amd64.tar.gz"
-        amd64.sha256 = "d510d97a247ad9b5a4e92759ea9b1b6be07d9f18187209b359525744e1bb8947"
+        amd64.url = "https://github.com/sibprogrammer/xq/releases/download/v1.2.4/xq_1.2.4_linux_amd64.tar.gz"
+        amd64.sha256 = "96148dc3ce4fede9ab47b26fa07f1ada950dfd61ae54db7013c76a410945302f"
 
-        armhf.url = "https://github.com/sibprogrammer/xq/releases/download/v1.2.3/xq_1.2.3_linux_armv7.tar.gz"
-        armhf.sha256 = "f9b01ba7d77965f292f3c1b8c164267367507e16a8951b67733a539d7f73eecb"
+        armhf.url = "https://github.com/sibprogrammer/xq/releases/download/v1.2.4/xq_1.2.4_linux_armv7.tar.gz"
+        armhf.sha256 = "9b08c33f1a3dd1f7a6a82dd91ef7dfb5297d0c3ea2ccfc6ee616393667862d56"
 
-        arm64.url = "https://github.com/sibprogrammer/xq/releases/download/v1.2.3/xq_1.2.3_linux_arm64.tar.gz"
-        arm64.sha256 = "a8989b2b1a5254033aebacb72ffea77964d6903d809361001dbf1ed09a0c6550"
+        arm64.url = "https://github.com/sibprogrammer/xq/releases/download/v1.2.4/xq_1.2.4_linux_arm64.tar.gz"
+        arm64.sha256 = "414ea9fde3c6e669f034465c21aa095bc3c10a3e3dd8c2989ee8073605274bf9"
 
         #
         # INFO need also to update extensions version on _common.sh
@@ -109,7 +109,7 @@ ram.runtime = "1G"
     admin.label = "Admins"
 
     [resources.apt]
-    packages = ["openjdk-17-jre", "postgresql"]
+    packages = ["openjdk-17-jre", "postgresql", "libreoffice"]
 
     [resources.database]
     type = "postgresql"

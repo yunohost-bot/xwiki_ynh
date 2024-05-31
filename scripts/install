@@ -13,15 +13,15 @@ source /usr/share/yunohost/helpers
 # APP "BUILD" (DEPLOYING SOURCES, VENV, COMPILING ETC)
 #=================================================
 
-if [ -n "$(ls -A $data_dir)" ]; then
+if [ -n "$(ls -A "$data_dir")" ]; then
     old_data_dir_path="${data_dir}_$(date '+%Y%m%d.%H%M%S')"
     ynh_print_warn "Data directory was not empty. Data was moved to $old_data_dir_path"
-    mkdir -p $old_data_dir_path
+    mkdir -p "$old_data_dir_path"
     mv -t "$old_data_dir_path" "$data_dir"/*
 fi
 
 mkdir -p /var/log/"$app"
-mkdir -p /etc/$app
+mkdir -p /etc/"$app"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -52,7 +52,7 @@ ynh_add_systemd_config
 
 yunohost service add "$app" --description=XWiki --log="/var/log/$app/$app.log"
 
-ynh_use_logrotate --logfile "/var/log/$app"
+ynh_use_logrotate --logfile="/var/log/$app"
 
 #=================================================
 # INSTALL EXTENSIONS
@@ -61,9 +61,9 @@ ynh_use_logrotate --logfile "/var/log/$app"
 enable_super_admin
 
 # Start a systemd service
-ynh_systemd_action --service_name=$app --action=start --log_path=systemd --line_match="$systemd_match_start_line"
+ynh_systemd_action --service_name="$app" --action=start --log_path=systemd --line_match="$systemd_match_start_line"
 
-if [ $install_standard_flavor -eq 1 ]; then
+if [ "$install_standard_flavor" -eq 1 ]; then
     ynh_script_progression --message='Installing flavor...'
     wait_for_flavor_install
 fi
@@ -72,7 +72,7 @@ ynh_script_progression --message='Installing LDAP extension...' --weight=1
 install_exension 'org.xwiki.contrib.ldap:ldap-authenticator' "$ldap_version"
 
 # Disable super admin
-ynh_systemd_action --service_name=$app --action=stop
+ynh_systemd_action --service_name="$app" --action=stop
 disable_super_admin
 
 #=================================================
@@ -82,7 +82,7 @@ disable_super_admin
 #=================================================
 
 ynh_script_progression --message='Starting a systemd service...' --weight=1
-ynh_systemd_action --service_name=$app --action=start --log_path=systemd --line_match="$systemd_match_start_line"
+ynh_systemd_action --service_name="$app" --action=start --log_path=systemd --line_match="$systemd_match_start_line"
 wait_xwiki_started
 
 #=================================================

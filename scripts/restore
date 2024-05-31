@@ -22,7 +22,7 @@ ynh_restore
 #=================================================
 ynh_script_progression --message="Restoring the database..." --weight=1
 
-ynh_psql_connect_as --user=$db_user --password=$db_pwd --database=$db_name < ./db.sql
+ynh_psql_connect_as --user="$db_user" --password="$db_pwd" --database="$db_name" < ./db.sql
 
 #=================================================
 # RESTORE SYSTEM CONFIGURATIONS
@@ -32,10 +32,10 @@ ynh_script_progression --message="Restoring system configurations related to $ap
 mkdir -p /var/log/"$app"
 set_permissions
 
-systemctl enable $app.service --quiet
-yunohost service add $app --description=XWiki --log="/var/log/$app/$app.log"
+systemctl enable "$app".service --quiet
+yunohost service add "$app" --description=XWiki --log="/var/log/$app/$app.log"
 
-ynh_use_logrotate --logfile "/var/log/$app"
+ynh_use_logrotate --logfile="/var/log/$app"
 
 #=================================================
 # GENERIC FINALIZATION
@@ -44,7 +44,7 @@ ynh_use_logrotate --logfile "/var/log/$app"
 #=================================================
 ynh_script_progression --message="Reloading NGINX web server and $app's service..." --weight=1
 
-ynh_systemd_action --service_name=$app --action=start --log_path=systemd --line_match="$systemd_match_start_line"
+ynh_systemd_action --service_name="$app" --action=start --log_path=systemd --line_match="$systemd_match_start_line"
 wait_xwiki_started
 
 ynh_systemd_action --service_name=nginx --action=reload
