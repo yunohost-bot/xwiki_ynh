@@ -2,7 +2,7 @@
 <jobRequest xmlns="http://www.xwiki.org">
     <id>
         <element>extension</element>
-        <element>provision</element>
+        <element>action</element>
         <element>__JOB_ID__</element>
 <!--         <string>wiki:xwiki</string> -->
     </id>
@@ -29,7 +29,7 @@
         <key>namespaces</key>
         <value>
             <list xmlns="" xmlns:ns2="http://www.xwiki.org">
-                <string>xwiki:xwiki</string>
+                <string>wiki:xwiki</string>
             </list>
         </value>
     </property>
