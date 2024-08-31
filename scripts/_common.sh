@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #=================================================
-# COMMON VARIABLES
+# COMMON VARIABLES AND CUSTOM HELPERS
 #=================================================
 
 super_admin_config='#'
@@ -27,14 +27,10 @@ else
     web_inf_path="$install_dir/webapps$path/WEB-INF"
 fi
 
-#=================================================
-# PERSONAL HELPERS
-#=================================================
-
 enable_super_admin() {
     super_admin_pwd=$(ynh_string_random)
     super_admin_config="xwiki.superadminpassword=$super_admin_pwd"
-    ynh_add_config --template=xwiki.cfg --destination=/etc/"$app"/xwiki_conf.cfg
+    ynh_config_add --template=xwiki.cfg --destination=/etc/"$app"/xwiki_conf.cfg
     ln -f /etc/"$app"/xwiki_conf.cfg "$web_inf_path"/xwiki.cfg
     chmod 400 /etc/"$app"/xwiki_conf.cfg
     chown "$app:$app" /etc/"$app"/xwiki_conf.cfg
@@ -42,7 +38,7 @@ enable_super_admin() {
 
 disable_super_admin() {
     super_admin_config='#'
-    ynh_add_config --template=xwiki.cfg --destination=/etc/"$app"/xwiki_conf.cfg
+    ynh_config_add --template=xwiki.cfg --destination=/etc/"$app"/xwiki_conf.cfg
     ln -f /etc/"$app"/xwiki_conf.cfg "$web_inf_path"/xwiki.cfg
     chmod 400 /etc/"$app"/xwiki_conf.cfg
     chown "$app:$app" /etc/"$app"/xwiki_conf.cfg
@@ -69,7 +65,7 @@ install_exension() {
     chmod 700 "$temp_dir"
     chown root:root "$temp_dir"
 
-    ynh_add_config --template=install_extensions.xml --destination="$temp_dir"/install_extensions.xml
+    ynh_config_add --template=install_extensions.xml --destination="$temp_dir"/install_extensions.xml
     status_raw=$($curl -i --user "superadmin:$super_admin_pwd" -X PUT -H 'Content-Type: text/xml' "http://127.0.0.1:$port/${path2}rest/jobs?jobType=install&async=true" --upload-file $temp_dir/install_extensions.xml)
     state_request=$(echo "$status_raw" | $xq -x '//jobStatus/ns2:state')
 
@@ -80,17 +76,17 @@ install_exension() {
         state_request=$(echo "$status_raw" | $xq -x '//jobStatus/state')
 
         if [ -z "$state_request" ]; then
-            ynh_die --message="Invalid answer: '$status_raw'"
+            ynh_die "Invalid answer: '$status_raw'"
         elif [ "$state_request" == FINISHED ]; then
             # Check if error happen
             error_msg=$(echo "$status_raw" | $xq -x '//jobStatus/errorMessage')
             if [ -z "$error_msg" ]; then
                 break
             else
-                ynh_die --message="Error while installing extension '$extension_id'. Error: $error_msg"
+                ynh_die "Error while installing extension '$extension_id'. Error: $error_msg"
             fi
         elif [ "$state_request" != RUNNING ]; then
-            ynh_die --message="Invalid status '$state_request'"
+            ynh_die "Invalid status '$state_request'"
         fi
     done
 }
@@ -121,29 +117,29 @@ wait_for_flavor_install() {
 }
 
 install_source() {
-    ynh_setup_source --dest_dir="$install_dir" --full_replace=1
+    ynh_setup_source --dest_dir="$install_dir" --full_replace
     ynh_setup_source --dest_dir="$install_dir"/webapps/xwiki/WEB-INF/lib/ --source_id=jdbc
     ynh_setup_source --dest_dir="$install_dir"/xq_tool --source_id=xq_tool
 
-    ynh_secure_remove --file="$install_dir"/webapps/xwiki/WEB-INF/xwiki.cfg
-    ynh_secure_remove --file="$install_dir"/webapps/xwiki/WEB-INF/xwiki.properties
-    ynh_secure_remove --file="$install_dir"/webapps/root
+    ynh_safe_rm "$install_dir"/webapps/xwiki/WEB-INF/xwiki.cfg
+    ynh_safe_rm "$install_dir"/webapps/xwiki/WEB-INF/xwiki.properties
+    ynh_safe_rm "$install_dir"/webapps/root
 
     ln -s /var/log/"$app" "$install_dir"/logs
 
     if $install_on_root; then
         mv "$install_dir"/webapps/xwiki "$install_dir"/webapps/root
     elif [ "$path" == /root ]; then
-        ynh_die --message='Path "/root" not supported'
+        ynh_die 'Path "/root" not supported'
     elif [ "$path" != /xwiki ]; then
         mv "$install_dir"/webapps/xwiki "$install_dir/webapps$path"
     fi
 }
 
 add_config() {
-    ynh_add_config --template=hibernate.cfg.xml --destination=/etc/"$app"/hibernate.cfg.xml
-    ynh_add_config --template=xwiki.cfg --destination=/etc/"$app"/xwiki_conf.cfg
-    ynh_add_config --template=xwiki.properties --destination=/etc/"$app"/xwiki_conf.properties
+    ynh_config_add --template=hibernate.cfg.xml --destination=/etc/"$app"/hibernate.cfg.xml
+    ynh_config_add --template=xwiki.cfg --destination=/etc/"$app"/xwiki_conf.cfg
+    ynh_config_add --template=xwiki.properties --destination=/etc/"$app"/xwiki_conf.properties
 
     # Note that using /etc/xwiki/xwiki.cfg or /etc/xwiki/xwiki.properties is hard coded on the application
     # And using this break multi instance feature so we must use an other path
@@ -153,14 +149,13 @@ add_config() {
 }
 
 set_permissions() {
-    chmod -R u+rwX,o-rwx "$install_dir"
-    chown -R "$app:$app" "$install_dir"
-
+    #REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod -R u+rwX,o-rwx "$install_dir"
+    #REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R "$app:$app" "$install_dir"
     chmod -R u=rwX,g=rX,o= /etc/"$app"
     chown -R "$app:$app" /etc/"$app"
 
-    chown "$app:$app" -R /var/log/"$app"
-    chmod u=rwX,g=rX,o= -R /var/log/"$app"
+    #REMOVEME? Assuming ynh_config_add_logrotate is called, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown "$app:$app" -R /var/log/"$app"
+    #REMOVEME? Assuming ynh_config_add_logrotate is called, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod u=rwX,g=rX,o= -R /var/log/"$app"
 
     find "$data_dir" \(   \! -perm -o= \
                     -o \! -user "$app" \
@@ -168,11 +163,3 @@ set_permissions() {
                 -exec chown "$app:$app" {} \; \
                 -exec chmod u=rwX,g=rX,o= {} \;
 }
-
-#=================================================
-# EXPERIMENTAL HELPERS
-#=================================================
-
-#=================================================
-# FUTURE OFFICIAL HELPERS
-#=================================================
