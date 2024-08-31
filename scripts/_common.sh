@@ -9,13 +9,13 @@ systemd_match_start_line='oxtjl.NotifyListener:main: ---------------------------
 flavor_version='16.3.1'
 ldap_version='9.15.2'
 
-if [ $install_standard_flavor -eq 1 ]; then
+if [ "$install_standard_flavor" -eq 1 ]; then
     distribution_default_ui="distribution.defaultUI=org.xwiki.platform:xwiki-platform-distribution-flavor-mainwiki/$flavor_version"
 else
     distribution_default_ui='#'
 fi
 
-if [ $path == '/' ]; then
+if [ "$path" == '/' ]; then
     install_on_root=true
     path2=''
     path3=''
@@ -144,18 +144,18 @@ add_config() {
     # Note that using /etc/xwiki/xwiki.cfg or /etc/xwiki/xwiki.properties is hard coded on the application
     # And using this break multi instance feature so we must use an other path
     # Note that symlink don't work. So use hard link instead.
-    ln -f /etc/$app/xwiki_conf.cfg "$web_inf_path"/xwiki.cfg
-    ln -f /etc/$app/xwiki_conf.properties "$web_inf_path"/xwiki.properties
+    ln -f /etc/"$app"/xwiki_conf.cfg "$web_inf_path"/xwiki.cfg
+    ln -f /etc/"$app"/xwiki_conf.properties "$web_inf_path"/xwiki.properties
 }
 
 set_permissions() {
-    #REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod -R u+rwX,o-rwx "$install_dir"
-    #REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R "$app:$app" "$install_dir"
+    chmod -R u+rwX,o-rwx "$install_dir"
+    chown -R "$app:$app" "$install_dir"
     chmod -R u=rwX,g=rX,o= /etc/"$app"
     chown -R "$app:$app" /etc/"$app"
 
-    #REMOVEME? Assuming ynh_config_add_logrotate is called, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown "$app:$app" -R /var/log/"$app"
-    #REMOVEME? Assuming ynh_config_add_logrotate is called, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod u=rwX,g=rX,o= -R /var/log/"$app"
+    chown "$app:$app" -R /var/log/"$app"
+    chmod u=rwX,g=rX,o= -R /var/log/"$app"
 
     find "$data_dir" \(   \! -perm -o= \
                     -o \! -user "$app" \

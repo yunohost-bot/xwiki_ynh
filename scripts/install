@@ -73,7 +73,7 @@ disable_super_admin
 # START SYSTEMD SERVICE
 #=================================================
 
-ynh_script_progression 'Starting $app's systemd service...'
+ynh_script_progression "Starting $app's systemd service..."
 ynh_systemctl --service="$app" --action=start --log_path=systemd --wait_until="$systemd_match_start_line"
 wait_xwiki_started
 
