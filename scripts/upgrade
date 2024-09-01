@@ -3,7 +3,7 @@
 source _common.sh
 source /usr/share/yunohost/helpers
 
-if ynh_compare_current_package_version --comparison=le --version='14.10.8~ynh1'; then
+if ynh_app_upgrading_from_version_before_or_equal_to '14.10.8~ynh1'; then
     ynh_die --mesage='Upgrade from this version is not supported. Please backup and restore manually the data after a clean new install'
 fi
 
