@@ -149,7 +149,7 @@ add_config() {
 }
 
 set_permissions() {
-    chmod -R u+rwX,o-rwx "$install_dir"
+    chmod -R u+rwX,g+rX-w,o= "$install_dir"
     chown -R "$app:$app" "$install_dir"
     chmod -R u=rwX,g=rX,o= /etc/"$app"
     chown -R "$app:$app" /etc/"$app"
@@ -157,6 +157,7 @@ set_permissions() {
     chown "$app:$app" -R /var/log/"$app"
     chmod u=rwX,g=rX,o= -R /var/log/"$app"
 
+    chmod u=rwx,g=rx,o= "$data_dir"
     find "$data_dir" \(   \! -perm -o= \
                     -o \! -user "$app" \
                     -o \! -group "$app" \) \
